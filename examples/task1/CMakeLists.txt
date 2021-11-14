@@ -48,3 +48,12 @@ set(POSE_FROM_FUNDAMENTAL
         )
 add_executable(task6_test_pose_from_fundamental ${POSE_FROM_FUNDAMENTAL} )
 target_link_libraries(task6_test_pose_from_fundamental sfm util core features )
+
+# test feature extraction
+set(FEATURE_EXTRACTION
+        task1-7_test_features.cc
+        visualizer.h
+        visualizer.cc
+        )
+add_executable(task7_test_features ${FEATURE_EXTRACTION} )
+target_link_libraries(task7_test_features sfm util core features )

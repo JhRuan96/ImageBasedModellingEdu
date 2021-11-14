@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
+#include <cassert>
 #include <util/system.h>
 #include <sfm/ransac_fundamental.h>
 #include "math/functions.h"
@@ -40,8 +41,9 @@ int  calc_ransac_iterations (double p,
 
     /** TODO HERE
      * Coding here**/
-    return 0;
-
+    double prob_all_inlier = math::fastpow(p, K);
+    double iterations = std::log(1.0 - z) / std::log(1.0 - prob_all_inlier);
+    return static_cast<int>(math::round(iterations));
 
     /** Reference
     double prob_all_good = math::fastpow(p, K);
@@ -77,7 +79,7 @@ double  calc_sampson_distance (FundamentalMatrix const& F, sfm::Correspondence2D
     return p2_F_p1 / sum;
 }
 /**
- * \description 8点发估计相机基础矩阵
+ * \description 8点法估计相机基础矩阵
  * @param pset1 -- 第一个视角的特征点
  * @param pset2 -- 第二个视角的特征点
  * @return 估计的基础矩阵
@@ -166,7 +168,7 @@ void calc_fundamental_least_squares(sfm::Correspondences2D2D const & matches, Fu
  */
 std::vector<int> find_inliers(sfm::Correspondences2D2D const & matches
     ,FundamentalMatrix const & F, const double & thresh){
-    const double squared_thresh = thresh* thresh;
+    const double squared_thresh = thresh * thresh;
 
     std::vector<int> inliers;
 
@@ -174,8 +176,13 @@ std::vector<int> find_inliers(sfm::Correspondences2D2D const & matches
      * TODO HERE
      *
      * Coding here **/
-
-    /** Reference
+    for (int i = 0; i < matches.size(); i++){
+        double dist = calc_sampson_distance(F, matches[i]);
+        if(dist < squared_thresh){
+            inliers.push_back(i);
+        }
+    }
+        /** Reference
     for(int i=0; i< matches.size(); i++){
         double error = calc_sampson_distance(F, matches[i]);
         if(error< squared_thresh){
@@ -183,7 +190,7 @@ std::vector<int> find_inliers(sfm::Correspondences2D2D const & matches
         }
     }
      **/
-    return inliers;
+     return inliers;
 }
 
 
@@ -216,7 +223,7 @@ int main(int argc, char *argv[]){
         n_line++;
     }
 
-    /* 计算采用次数 */
+    /* 计算采样次数 */
     const float inlier_ratio =0.5;
     const int n_samples=8;
     int n_iterations = calc_ransac_iterations(inlier_ratio, n_samples);

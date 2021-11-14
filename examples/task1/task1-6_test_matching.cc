@@ -108,7 +108,7 @@ feature_set_matching (core::ByteImage::Ptr image1, core::ByteImage::Ptr image2)
     //feature_set_opts.surf_opts.verbose_output = true;
     //feature_set_opts.surf_opts.contrast_threshold = 500.0f;
 
-    // 计算第一幅图像的SIT和SURF特征点
+    // 计算第一幅图像的SIFT和SURF特征点
     sfm::FeatureSet feat1(feature_set_opts);
     feat1.compute_features(image1);
     // 计算第二幅图像的SIFT和SURF特征点
